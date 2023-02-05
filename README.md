@@ -1,2 +1,2 @@
-# rl_bed
-personal reinforcement learning project bed
+# rl_incubator
+personal reinforcement learning project incubator

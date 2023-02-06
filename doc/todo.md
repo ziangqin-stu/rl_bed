@@ -7,8 +7,9 @@
 
 ## 合规
 - [ ] 符合Python面向对象
-- [ ] 添加pytest框架
-- [ ] 添加yml参数机制
+- [x] 使用pytest框架
+- [x] 使用Yaml参数机制
+- [ ] 理解import机制
 
 ## 环境
 - [ ] stepper_env开发

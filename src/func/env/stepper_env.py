@@ -1,5 +1,6 @@
 import torch
 import time
+import yaml
 # from base_env import BaseEnvironment
 
 
@@ -11,9 +12,9 @@ class StepperDiscreteEnvironment:
 
     def _build_sandbox(self):
         self.sandbox = {
-            "bonus_map": [0.0] * 4 + [-1.0] + [0.0] * 4 + [1.0],
-            "position": int(0),
-            "length": int(10),
+            "bonus_map": self.conf['bonus_map'],
+            "position": int(self.conf['init_position']),
+            "length": int(len(self.conf['bonus_map'])),
         }
         return self.sandbox
 
@@ -23,32 +24,32 @@ class StepperDiscreteEnvironment:
 
     def reset(self):
         self._build_sandbox()
-        info = {
+        _info = {
             'status': 'reset',
             'action': None
         }
         observation = self._build_observation()
-        return observation, info
+        return observation, _info
 
-    def step(self, action: torch.Tensor):
+    def step(self, _action: torch.Tensor):
         # pretreatment
-        action_value = int(action.item())
+        action_value = int(_action.item())
         # update sandbox
         new_position = self.sandbox['position'] + action_value  # compute new position w.r.t incoming action
         new_position = max(0, min(self.sandbox['length'] - 1, new_position))  # clip new position into valid range
         self.sandbox['position'] = new_position
-        reward = self.sandbox['bonus_map'][self.sandbox['position']]  # consume reward
+        _reward = self.sandbox['bonus_map'][self.sandbox['position']]  # consume reward
         self.sandbox['bonus_map'][self.sandbox['position']] = 0.0
         # compute done sate
-        done = self.sandbox['position'] == self.sandbox['length'] - 1
-        truncated = False
+        _done = self.sandbox['position'] == self.sandbox['length'] - 1
+        _truncated = False
         # return
         observation = self._build_observation()
-        info = {
+        _info = {
             'status': 'running',
             'action': action_value
         }
-        return observation, reward, done, truncated, info
+        return observation, _reward, _done, _truncated, _info
 
     def render(self, animate=False, frame_interval=1.0):
         if animate:
@@ -65,6 +66,8 @@ class StepperDiscreteEnvironment:
 
 
 if __name__ == "__main__":
+
+
     env = StepperDiscreteEnvironment(None)
     obs, _ = env.reset()
     env.render(animate=True)

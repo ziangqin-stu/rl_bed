@@ -1,0 +1,14 @@
+conf_name: 'stepper env discrete base'
+action_type: 'discrete'
+bonus_map:
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - -1.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 1.0
+init_position: 0

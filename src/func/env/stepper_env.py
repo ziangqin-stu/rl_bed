@@ -1,6 +1,6 @@
 import torch
 import time
-import yaml
+import copy
 # from base_env import BaseEnvironment
 
 
@@ -9,10 +9,11 @@ class StepperDiscreteEnvironment:
         self.conf = conf
         self.name = "StepperEnvironment"
         self._build_sandbox()
+        self._done = False
 
     def _build_sandbox(self):
         self.sandbox = {
-            "bonus_map": self.conf['bonus_map'],
+            "bonus_map": copy.deepcopy(self.conf['bonus_map']),
             "position": int(self.conf['init_position']),
             "length": int(len(self.conf['bonus_map'])),
         }
@@ -24,6 +25,7 @@ class StepperDiscreteEnvironment:
 
     def reset(self):
         self._build_sandbox()
+        self._done = False
         _info = {
             'status': 'reset',
             'action': None
@@ -32,6 +34,7 @@ class StepperDiscreteEnvironment:
         return observation, _info
 
     def step(self, _action: torch.Tensor):
+        assert not self._done
         # pretreatment
         action_value = int(_action.item())
         # update sandbox
@@ -42,6 +45,7 @@ class StepperDiscreteEnvironment:
         self.sandbox['bonus_map'][self.sandbox['position']] = 0.0
         # compute done sate
         _done = self.sandbox['position'] == self.sandbox['length'] - 1
+        self._done = _done
         _truncated = False
         # return
         observation = self._build_observation()
